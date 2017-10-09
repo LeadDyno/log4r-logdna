@@ -1,8 +1,7 @@
 # Log4r::Logdna
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/log4r/logdna`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Log4r appender that outputs to LogDNA service. Sends all the Log4r logging context data as LogDNA data
+via the JSON API.
 
 ## Installation
 
@@ -22,17 +21,45 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Add the LogdnaOutputter to your log4r configuration:
 
-## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+```
+  outputters:
+    - type: LogdnaOutputter
+      name: logdna_output
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+By default, the `env` is detected using the `RACK_ENV` environment variable but can be changed via the Outputter
+configuration options.
+
+The `app` field is set to the name of the Log4r logger. 
+
+Since LogDNA shows the app name and log level outside of the message, an optimization is to use the `PatternFormatter`
+to drop the logger name and log level, such as:
+
+```
+  outputters:
+    - type: LogdnaOutputter
+      name: logdna_output
+      formatter   :
+        pattern     : '%m'
+        type        : PatternFormatter
+```
+
+Supported optional Outputter options:
+
+```
+hostname: Override auto-detected hostname 
+ip: Send IP information to LogDNA
+mac: Send MAC information to LogDNA
+env: Override auto-detected RACK_ENV value
+```
+
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/log4r-logdna.
+Bug reports and pull requests are welcome on GitHub at https://github.com/LeadDyno/log4r-logdna.
 
 ## License
 
