@@ -24,21 +24,21 @@ Or install it yourself as:
 Add the LogdnaOutputter to your log4r configuration:
 
 
-```
+```yaml
   outputters:
     - type: LogdnaOutputter
       name: logdna_output
 ```
 
-By default, the `env` is detected using the `RACK_ENV` environment variable but can be changed via the Outputter
+By default, the LogDNA `env` is detected using the `RACK_ENV` environment variable but can be changed via the Outputter
 configuration options.
 
-The `app` field is set to the name of the Log4r logger. 
+The LogDNA `app` field is set to the name of the Log4r logger. 
 
 Since LogDNA shows the app name and log level outside of the message, an optimization is to use the `PatternFormatter`
 to drop the logger name and log level, such as:
 
-```
+```yaml
   outputters:
     - type: LogdnaOutputter
       name: logdna_output
@@ -49,12 +49,12 @@ to drop the logger name and log level, such as:
 
 Supported optional Outputter options:
 
-```
-hostname: Override auto-detected hostname 
-ip: Send IP information to LogDNA
-mac: Send MAC information to LogDNA
-env: Override auto-detected RACK_ENV value
-```
+<pre>
+  hostname: Override auto-detected hostname 
+  ip: Send IP information to LogDNA
+  mac: Send MAC information to LogDNA
+  env: Override auto-detected RACK_ENV value
+</pre>
 
 
 ## Contributing
