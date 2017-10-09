@@ -1,4 +1,4 @@
-require 'logdna'
+require 'logdna/client'
 require 'log4r/outputter/outputter'
 
 module Log4r
@@ -10,18 +10,20 @@ module Log4r
 
       logdna_key = hash['logdna_key'] || ENV['LOGDNA_KEY']
       opts = {}
-      opts['hostname'] = hash['hostname'] if hash['hostname']
-      opts['ip'] = hash['ip'] if hash['ip']
-      opts['mac'] = hash['mac'] if hash['mac']
-      opts['app'] = hash['app'] if hash['app']
-      opts['env'] = hash['env'] if hash['env']
-      opts['level'] = hash['level'] if hash['level']
+      opts[:hostname] = hash['hostname'] if hash['hostname']
+      opts[:ip] = hash['ip'] if hash['ip']
+      opts[:mac] = hash['mac'] if hash['mac']
+      opts[:app] = hash['app'] if hash['app']
+      opts[:app] = hash['facility'] unless opts[:app]
+      opts[:env] = hash['env'] if hash['env']
+      opts[:env] = ENV['RACK_ENV'] unless opts[:env]
+      opts[:level] = hash['level'] if hash['level']
 
       @gdc_key = hash.has_key?('global_context_key') ? hash['global_context_key'] : "gdc"
       @ndc_prefix = hash.has_key?('nested_context_prefix') ? hash['nested_context_prefix'] : "ndc_"
       @mdc_prefix = hash.has_key?('mapped_context_prefix') ? hash['mapped_context_prefix'] : "mdc_"
 
-      @logdna = ::Logdna::Ruby.new(logdna_key, opts)
+      @client = ::Logdna::Client.new(logdna_key, opts)
     end
 
     def format_attribute(value)
@@ -94,7 +96,7 @@ module Log4r
 
       msg[:message] = format(logevent) unless msg[:message]
 
-      @logdna.log(msg.to_json)
+      @client.tobuffer(msg.to_json, {})
     rescue => err
       puts "LogDNA logger. Could not send message: " + err.message
       puts err.backtrace.join("\n") if err.backtrace
