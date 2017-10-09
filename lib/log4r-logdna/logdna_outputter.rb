@@ -13,11 +13,7 @@ module Log4r
       opts[:hostname] = hash['hostname'] if hash['hostname']
       opts[:ip] = hash['ip'] if hash['ip']
       opts[:mac] = hash['mac'] if hash['mac']
-      opts[:app] = hash['app'] if hash['app']
-      opts[:app] = hash['facility'] unless opts[:app]
-      opts[:env] = hash['env'] if hash['env']
-      opts[:env] = ENV['RACK_ENV'] unless opts[:env]
-      opts[:level] = hash['level'] if hash['level']
+      opts[:env] = hash['env'] || ENV['RACK_ENV']
 
       @gdc_key = hash.has_key?('global_context_key') ? hash['global_context_key'] : "gdc"
       @ndc_prefix = hash.has_key?('nested_context_prefix') ? hash['nested_context_prefix'] : "ndc_"
@@ -34,9 +30,9 @@ module Log4r
 
     def canonical_log(logevent)
 
-      msg = {}
-      msg[:level] = Log4r::LNAMES[logevent.level]
-      msg["_logger"] = logevent.fullname
+      msg = {
+          :level => Log4r::LNAMES[logevent.level]
+      }
 
       if logevent.data.respond_to?(:backtrace)
         trace = logevent.data.backtrace
@@ -96,7 +92,7 @@ module Log4r
 
       msg[:message] = format(logevent) unless msg[:message]
 
-      @client.tobuffer(msg.to_json, {})
+      @client.tobuffer(msg.to_json, {:app => logevent.fullname})
     rescue => err
       puts "LogDNA logger. Could not send message: " + err.message
       puts err.backtrace.join("\n") if err.backtrace
