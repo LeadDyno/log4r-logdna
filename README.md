@@ -30,6 +30,9 @@ Add the LogdnaOutputter to your log4r configuration:
       name: logdna_output
 ```
 
+The LogDNA API key can be set with the `logdna_key` outputter option, or simply by setting the `LOGDNA_KEY` environment
+ variable.
+
 By default, the LogDNA `env` is detected using the `RACK_ENV` environment variable but can be changed via the Outputter
 configuration options.
 
@@ -50,6 +53,7 @@ to drop the logger name and log level, such as:
 Supported optional Outputter options:
 
 <pre>
+  logdna_key: LogDNA API key, if not using the LOGDNA_KEY environment variable
   hostname: Override auto-detected hostname 
   ip: Send IP information to LogDNA
   mac: Send MAC information to LogDNA
