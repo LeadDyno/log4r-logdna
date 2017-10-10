@@ -31,7 +31,8 @@ module Log4r
     def canonical_log(logevent)
 
       msg = {
-          :level => Log4r::LNAMES[logevent.level]
+          :level => Log4r::LNAMES[logevent.level],
+          :logger => logevent.fullname
       }
 
       if logevent.data.respond_to?(:backtrace)
@@ -55,7 +56,7 @@ module Log4r
       gdc = Log4r::GDC.get
       if gdc && gdc != $0 && @gdc_key
         begin
-          msg["_#{@gdc_key}"] = format_attribute(gdc)
+          msg["#{@gdc_key}"] = format_attribute(gdc)
         rescue
         end
       end
@@ -63,7 +64,7 @@ module Log4r
       if Log4r::NDC.get_depth > 0 && @ndc_prefix
         Log4r::NDC.clone_stack.each_with_index do |x, i|
           begin
-            msg["_#{@ndc_prefix}#{i}"] = format_attribute(x)
+            msg["#{@ndc_prefix}#{i}"] = format_attribute(x)
           rescue
           end
         end
@@ -73,7 +74,7 @@ module Log4r
       if mdc && mdc.size > 0 && @mdc_prefix
         mdc.each do |k, v|
           begin
-            msg["_#{@mdc_prefix}#{k}"] = format_attribute(v)
+            msg["#{@mdc_prefix}#{k}"] = format_attribute(v)
           rescue
           end
         end
@@ -92,7 +93,9 @@ module Log4r
 
       msg[:message] = format(logevent) unless msg[:message]
 
-      @client.tobuffer(msg.to_json, {:app => logevent.fullname})
+      app = logevent.fullname.split(/::/)[0]
+
+      @client.tobuffer(msg.to_json, {:app => app})
     rescue => err
       puts "LogDNA logger. Could not send message: " + err.message
       puts err.backtrace.join("\n") if err.backtrace
