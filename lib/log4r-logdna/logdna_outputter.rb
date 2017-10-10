@@ -23,7 +23,7 @@ module Log4r
     end
 
     def format_attribute(value)
-      value.inspect
+      value.to_s
     end
 
     private
