@@ -19,7 +19,7 @@ module Log4r
       @ndc_prefix = hash.has_key?('nested_context_prefix') ? hash['nested_context_prefix'] : "ndc_"
       @mdc_prefix = hash.has_key?('mapped_context_prefix') ? hash['mapped_context_prefix'] : "mdc_"
 
-      @client = ::Logdna::Client.new(logdna_key, opts)
+      @client = ::Logdna::Ruby.new(logdna_key, opts)
     end
 
     def format_attribute(value)
@@ -95,7 +95,7 @@ module Log4r
 
       app = logevent.fullname.split(/::/)[0]
 
-      @client.tobuffer(msg.to_json, {:app => app})
+      @client.log(msg.to_json, {:app => app})
     rescue => err
       puts "LogDNA logger. Could not send message: " + err.message
       puts err.backtrace.join("\n") if err.backtrace
