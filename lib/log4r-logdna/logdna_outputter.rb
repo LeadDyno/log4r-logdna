@@ -10,6 +10,7 @@ module Log4r
 
       logdna_key = hash['logdna_key'] || ENV['LOGDNA_KEY']
       opts = {}
+      opts[:endpoint] = hash['endpoint'] if hash['endpoint']
       opts[:hostname] = hash['hostname'] if hash['hostname']
       opts[:ip] = hash['ip'] if hash['ip']
       opts[:mac] = hash['mac'] if hash['mac']
